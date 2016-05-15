@@ -29,7 +29,7 @@ app.config(function (localStorageServiceProvider) {
     .setPrefix('bowlful');
 });
 
-app.controller('main', function ($scope, $ionicModal, localStorageService, $ionicPopup, $filter, $ionicSideMenuDelegate, $ionicActionSheet, $cordovaCamera) {
+app.controller('main', function ($scope, $ionicModal, localStorageService, $ionicPopup, $filter, $ionicSideMenuDelegate, $ionicActionSheet, $ionicListDelegate, $cordovaCamera) {
   //store the entities name in a variable var petData = 'pet';
   var petData = [];
 
@@ -164,6 +164,7 @@ app.controller('main', function ($scope, $ionicModal, localStorageService, $ioni
       console.log("Pet " + index + " removed.");
       localStorageService.set(petData, $scope.pets);
       $scope.getPets();
+      $ionicListDelegate.closeOptionButtons();
   };
 
   $scope.petDialog = function(index) {
