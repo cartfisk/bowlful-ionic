@@ -4,7 +4,7 @@
 // angular.module is a global place for creating, registering and retrieving Angular modules
 // 'starter' is the name of this angular module example (also set in a <body> attribute in index.html)
 // the 2nd parameter is an array of 'requires'
-var app = angular.module('bowlful', ['ionic', 'LocalStorageModule']);
+var app = angular.module('bowlful', ['ionic', 'LocalStorageModule', 'ngCordova']);
 
 app.run(function($ionicPlatform) {
   $ionicPlatform.ready(function() {
@@ -29,7 +29,7 @@ app.config(function (localStorageServiceProvider) {
     .setPrefix('bowlful');
 });
 
-app.controller('main', function ($scope, $ionicModal, localStorageService, $ionicPopup, $filter, $ionicSideMenuDelegate) {
+app.controller('main', function ($scope, $ionicModal, localStorageService, $ionicPopup, $filter, $ionicSideMenuDelegate, $ionicActionSheet, $cordovaCamera) {
   //store the entities name in a variable var petData = 'pet';
   var petData = [];
 
@@ -58,35 +58,65 @@ app.controller('main', function ($scope, $ionicModal, localStorageService, $ioni
     $ionicSideMenuDelegate.toggleLeft();
   };
 
-  // app.controller('addPhoto', function ($scope, $ionicModal, localStorageService, $ionicPopup, $filter, $ionicActionSheet, $timeout) {
-  //  // Triggered on a button click, or some other target
-  //  $scope.show = function() {
-  //
-  //    // Show the action sheet
-  //    var hideSheet = $ionicActionSheet.show({
-  //      buttons: [
-  //        { text: '<b>Share</b> This' },
-  //        { text: 'Move' }
-  //      ],
-  //      destructiveText: 'Delete',
-  //      titleText: 'Modify your album',
-  //      cancelText: 'Cancel',
-  //      cancel: function() {
-  //           // add cancel code..
-  //         },
-  //      buttonClicked: function(index) {
-  //        return true;
-  //      }
-  //    });
-  //
-  //    // For example's sake, hide the sheet after two seconds
-  //    $timeout(function() {
-  //      hideSheet();
-  //    }, 2000);
-  //
-  //  };
-  //
-  // });
+  $scope.photoActionSheet = function() {
+
+    // Show the action sheet
+    var hideSheet = $ionicActionSheet.show({
+      buttons: [
+        { text: 'Image from <b>Camera</b>' },
+        { text: 'Image from <b>Library</b>' }
+      ],
+      cancelText: 'Cancel',
+      cancel: function() {
+           // add cancel code..
+         },
+      buttonClicked: function(index) {
+        //camera
+        if (index==0){
+          $scope.getPhoto(true);
+        }
+        //library
+        if (index==1){
+          $scope.getPhoto(false);
+        }
+      }
+    });
+
+    // For example's sake, hide the sheet after two seconds
+    $timeout(function() {
+      hideSheet();
+    }, 2000);
+
+  };
+
+  $scope.getPhoto = function(camera) {
+    function onSuccess(imageData) {
+      console.log('success - js call');
+      //JS selector call is slightly faster...
+      $scope.pet.img = imageData;
+      $ionicActionSheet.hide();
+    }
+
+    function onFail(message) {
+      alert('Failed because: ' + message);
+    }
+
+    if (camera === true) {
+      //Use from Camera
+        navigator.camera.getPicture(onSuccess, onFail, {
+          quality: 50,
+          correctOrientation: true,
+          sourceType: Camera.PictureSourceType.CAMERA,
+          destinationType: Camera.DestinationType.FILE_URI
+        });
+    }
+    else {
+      navigator.camera.getPicture(onSuccess, onFail, {
+        sourceType: Camera.PictureSourceType.PHOTOLIBRARY,
+        destinationType: Camera.DestinationType.FILE_URI
+      });
+    }
+  };
 
   //configure the ionic modal before use
   $ionicModal.fromTemplateUrl('new-pet-modal.html', {
@@ -115,7 +145,7 @@ app.controller('main', function ($scope, $ionicModal, localStorageService, $ioni
   $scope.createPet = function () {
       //creates a new pet
       // $scope.pets.img = $scope.pets.kind + '.png';
-      $scope.pet.img = 'img/ionic.png';
+      // $scope.pet.img = 'img/ionic.png';
       $scope.pets.push($scope.pet);
       localStorageService.set(petData, $scope.pets);
       $scope.resetPet();
