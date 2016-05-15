@@ -94,7 +94,7 @@ app.controller('main', function ($scope, $ionicModal, localStorageService, $ioni
       console.log('success - js call');
       //JS selector call is slightly faster...
       $scope.pet.img = imageData;
-      $ionicActionSheet.hide();
+      $scope.photoActionSheet.hideSheet();
     }
 
     function onFail(message) {
@@ -144,6 +144,9 @@ app.controller('main', function ($scope, $ionicModal, localStorageService, $ioni
 
   $scope.createPet = function () {
       //creates a new pet
+      if (!$scope.pet.img) {
+        $scope.pet.img = 'img/ionic.png';
+      }
       // $scope.pets.img = $scope.pets.kind + '.png';
       // $scope.pet.img = 'img/ionic.png';
       $scope.pets.push($scope.pet);
