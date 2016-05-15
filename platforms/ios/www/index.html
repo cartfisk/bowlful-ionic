@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width">
+    <title></title>
+
+    <link href="lib/ionic/css/ionic.css" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet">
+    <!-- IF using Sass (run gulp sass first), then uncomment below and remove the CSS includes above
+    <link href="css/ionic.app.css" rel="stylesheet">
+    -->
+
+    <!-- ionic/angularjs js -->
+    <script src="lib/ionic/js/ionic.bundle.js"></script>
+    <script src="lib/angular-local-storage/dist/angular-local-storage.js"></script>
+
+    <!-- cordova script (this will be a 404 during development) -->
+    <script src="cordova.js"></script>
+
+    <!-- your app's js -->
+    <script src="js/app.js"></script>
+  </head>
+
+  <body ng-app="bowlful" ng-controller="main" ng-init="getPets()" class="platform-ios platform-cordova platform-webview">
+
+    <ion-pane>
+      <ion-header-bar class="bar-dark">
+          <h1 class="title">Bowlful</h1>
+
+          <!-- New Pet button-->
+          <button class="button button-icon" ng-click="openPetModal()">
+              <i class="icon ion-compose"></i>
+          </button>
+      </ion-header-bar>
+      <ion-content>
+
+        <div class="list" ng-repeat="pet in pets track by $index">
+
+          <div class="item item-avatar item-button-right" ng-click="petDialog($index)">
+            <img ng-src="{{pet.img}}">
+            <h2 ng-bind="pet.name"> {{pet.kind}}</h2>
+            <p>Last fed:
+              <span ng-bind="pet.feedLog[pet.feedLog.length - 1] | date:'h:mma'"></span>
+            </p>
+          </div>
+
+      </div>
+      <!-- <div class="bar bar-header bar-balanced" ng-click="clearStorage()">
+        <h1 class="title">bar-balanced</h1>
+      </div> -->
+      </ion-content>
+    </ion-pane>
+
+    <script id="new-pet-modal.html" type="text/ng-template">
+      <ion-modal-view>
+          <ion-header-bar class="bar-dark">
+              <h1 class="title">Add a new pet</h1>
+              <button class="button button-icon" ng-click="closePetModal()">
+                  <i class="icon ion-android-close"></i>
+              </button>
+          </ion-header-bar>
+          <ion-content>
+              <form ng-submit="createPet()">
+                  <div class="list list-inset">
+                      <label class="item item-input">
+                          <input ng-model="pet.name" type="text" placeholder="Pet name">
+                      </label>
+                      <ul class="list">
+                          <li class="item item-toggle">
+                              Fed recently?
+                              <label class="toggle toggle-balanced">
+                                  <input type="checkbox" ng-model="pet.feedStatus"
+                                  ng-true-value="0" ng-false-value="3">
+                                  <div class="track">
+                                      <div class="handle"></div>
+                                  </div>
+                              </label>
+                          </li>
+                      </ul>
+                      <div class="list">
+
+                        <label class="item item-input item-select">
+                          <div class="input-label">
+                            Animal
+                          </div>
+
+                          <select name='Animal' ng-model="pet.kind">
+                            <option  ng-repeat="item in newPetOptions.kind"
+                                    ng-value="item.text">{{ item.text }}</option>
+                          </select>
+
+                          // <select>
+                          //   <option selected>Dog</option>
+                          //   <option>Cat</option>
+                          //   <option>Bird</option>
+                          // </select>
+                        </label>
+
+                      </div>
+                      <button type="submit" class="button button-block button-positive">Add Pet</button>
+                  </div>
+              </form>
+          </ion-content>
+      </ion-modal-view>
+
+    </script>
+  </body>
+</html>
