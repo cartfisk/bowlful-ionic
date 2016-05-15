@@ -67,6 +67,9 @@ UserInterfaceState.xcuserstate
 
 *.sublime-workspace
 
+platforms/
+plugins/
+
 components/
 tmp
 temp
