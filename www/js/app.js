@@ -35,6 +35,7 @@ app.controller('main', function ($scope, $ionicModal, localStorageService, $ioni
 
   //initialize the pets scope with empty array
   $scope.pets = [];
+  $scope.undoToggle = 0;
 
   //initialize the pet scope with empty object
   $scope.resetPet = function (index) {
@@ -115,7 +116,7 @@ app.controller('main', function ($scope, $ionicModal, localStorageService, $ioni
       //   });
       // };
       // showAlert();
-      console.log("Photo upload cancelled.")
+      console.log("Photo upload cancelled.");
     }
 
     if (camera === true) {
@@ -143,6 +144,13 @@ app.controller('main', function ($scope, $ionicModal, localStorageService, $ioni
       $scope.newPetModal = modal;
   });
 
+
+  $ionicModal.fromTemplateUrl('edit-pet-modal.html', {
+      scope: $scope,
+      animation: 'slide-in-up'
+  }).then(function (modal) {
+      $scope.editPetModal = modal;
+  });
   // $ionicModal.fromTemplateUrl('add-photo-action-sheet.html', {
   //     scope: $scope,
   //     animation: 'slide-in-up'
@@ -161,6 +169,33 @@ app.controller('main', function ($scope, $ionicModal, localStorageService, $ioni
 
   $scope.createPet = function () {
       //creates a new pet
+      var index = $scope.pets.length;
+      if (!$scope.pet.img) {
+        $scope.pet.img = 'img/ionic.png';
+      }
+      $scope.pet.kind = {
+        text : $scope.selectedPet
+      };
+      if ($scope.pet.feedStatus == 0){
+        $scope.feedPet(index);
+      }
+      else {
+      }
+      // $scope.pets.img = $scope.pets.kind + '.png';
+      // $scope.pet.img = 'img/ionic.png';
+      $scope.pets.push($scope.pet);
+
+      localStorageService.set(petData, $scope.pets);
+      $scope.resetPet();
+      // refresh pets list
+      $scope.getPets();
+      //close new pet modal
+      $scope.newPetModal.hide();
+  };
+
+  $scope.editPet = function (index) {
+
+      //creates a new pet
       if (!$scope.pet.img) {
         $scope.pet.img = 'img/ionic.png';
       }
@@ -169,13 +204,14 @@ app.controller('main', function ($scope, $ionicModal, localStorageService, $ioni
       };
       // $scope.pets.img = $scope.pets.kind + '.png';
       // $scope.pet.img = 'img/ionic.png';
-      $scope.pets.push($scope.pet);
+      $scope.pets[index] = $scope.pet;
       localStorageService.set(petData, $scope.pets);
       $scope.resetPet();
       // refresh pets list
+      $ionicListDelegate.closeOptionButtons();
       $scope.getPets();
       //close new pet modal
-      $scope.newPetModal.hide();
+      $scope.editPetModal.hide();
   };
 
   $scope.removePet = function (index) {
@@ -221,7 +257,7 @@ app.controller('main', function ($scope, $ionicModal, localStorageService, $ioni
 
   $scope.petOptions = function(index) {
     var petOptionsPopup = $ionicPopup.show({
-      title: $scope.pets[index].name + ' | More',
+      title: $scope.pets[index].name + ' – More',
       buttons: [
         { text: 'Back' },
         {
@@ -242,41 +278,62 @@ app.controller('main', function ($scope, $ionicModal, localStorageService, $ioni
     });
   };
 
+  $scope.updatePetFeed = function(pet) {
+    pet.feedLog.push(new Date());
+    pet.feedStatus = 0;
+    pet.currentFeed += 1;
+    return pet;
+  };
+
 
   $scope.feedPet = function (index) {
+      $ionicListDelegate.closeOptionButtons();
       //updates a pet as fed
-      if (index !== -1) {
-        if (!$scope.pets[index].feedLog[0]) {
-          $scope.pets[index].feedLog = [];
-          $scope.pets[index].feedLog.push(new Date());
-          $scope.pets[index].feedStatus = 0;
-          $scope.pets[index].currentFeed = 0;
+      var pet = $scope.pets[index];
+      // $scope.pet = $scope.pets[index];
+      if (pet) {
+        if (pet.feedLog[0]) {
+          pet = $scope.updatePetFeed(pet);
         }
-        else {
-          var current = $scope.pets[index].feedLog.length;
-          $scope.pets[index].feedLog[current] = new Date();
-          $scope.pets[index].feedStatus = 0;
-          $scope.pets[index].currentFeed += 1;
+        else if (pet.feedLog == []) {
+          var current = pet.feedLog.length;
+          pet.feedLog[current] = new Date();
+          pet.feedStatus = 0;
+          pet.currentFeed += 1;
           //0 is good, 1 is feed soon, 2 is feed asap
         }
+        $scope.pet = pet;
+        $scope.pets[index] = pet;
       }
       localStorageService.set(petData, $scope.pets);
   };
 
   $scope.undoFeed = function (index) {
-    if (index !== -1) {
-      var latest = $scope.pets[index].feedLog.length;
-      $scope.pets[index].feedLog.splice(latest - 1, 1);
+    if (index >= 0) {
+      var latest = $scope.pets[index].feedLog.length - 1;
+      $scope.pets[index].feedLog.splice(latest, 1);
       $scope.pets[index].currentFeed -= 1;
+      localStorageService.set(petData, $scope.pets);
+      $scope.undoToggle = 0;
     }
   };
 
-  $scope.openPetModal = function () {
+  $scope.openNewPetModal = function () {
       $scope.newPetModal.show();
   };
 
-  $scope.closePetModal = function () {
+  $scope.closeNewPetModal = function () {
       $scope.newPetModal.hide();
+  };
+
+  $scope.openEditPetModal = function (index) {
+      $scope.pet = $scope.pets[index];
+      $scope.editPetModal.show();
+      $ionicListDelegate.closeOptionButtons();
+  };
+
+  $scope.closeEditPetModal = function () {
+      $scope.editPetModal.hide();
   };
 
   //manually clear LocalStorageModule. devtool.
