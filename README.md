@@ -1,25 +1,33 @@
-Ionic App Base
+Bowlful
 =====================
 
-A starting project for Ionic that optionally supports using custom SCSS.
+A pet tracking app.
 
-## Using this project
+Add pets, track when they were last fed, recieve notifications if a pet hasn't been fed on time.
 
-We recommend using the [Ionic CLI](https://github.com/driftyco/ionic-cli) to create new Ionic projects that are based on this project but use a ready-made starter template.
+In progress: cloud sync for sharing pets between multiple users.
 
-For example, to start a new Ionic project with the default tabs interface, make sure the `ionic` utility is installed:
+### Getting Started
 
-```bash
-$ npm install -g ionic
-```
+**Requirements**
+* Bower
 
-Then run:
+Navigate to project directory in the terminal. From there:
 
-```bash
-$ ionic start myProject tabs
-```
+`npm install`
 
-More info on this can be found on the Ionic [Getting Started](http://ionicframework.com/getting-started) page and the [Ionic CLI](https://github.com/driftyco/ionic-cli) repo.
+`bower install`
 
-## Issues
-Issues have been disabled on this repo, if you do find an issue or have a question consider posting it on the [Ionic Forum](http://forum.ionicframework.com/).  Or else if there is truly an error, follow our guidelines for [submitting an issue](http://ionicframework.com/submit-issue/) to the main Ionic repository.
+This installs the external libraries for the project.
+
+**To test in browser**
+
+`ionic serve`
+
+**To test on mobile device**
+
+`npm install -g phonegap`
+
+`phonegap serve`
+
+Navigate to your machine's local IP on your mobile device to test in browser and install the PhoneGap mobile app to test in a webView wrapper.
