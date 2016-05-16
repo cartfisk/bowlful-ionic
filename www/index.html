@@ -17,6 +17,7 @@
 
 
     <script src="lib/ngCordova/dist/ng-cordova.js"></script>
+    <script src="lib/angular-messages/angular-messages.js"></script>
     <!-- cordova script (this will be a 404 during development) -->
     <script src="cordova.js"></script>
 
@@ -59,8 +60,10 @@
             <ion-list can-swipe="true">
               <ion-item class="item item-avatar" ng-repeat="pet in pets track by $index" ng-click="petDialog($index)">
                 <img ng-src="{{pet.img}}">
-                <h2 ng-bind="pet.name"> {{pet.kind}}</h2>
-                <p>Last fed:
+                <h2 ng-bind="pet.name"></h2>
+                <p>
+                  <span ng-bind="pet.kind.text + '  '"></span>
+                    –  Last fed:
                   <span ng-bind="pet.feedLog[pet.feedLog.length - 1] | date:'h:mma'"></span>
                 </p>
                 <ion-option-button class="button-energized icon ion-gear-a" ng-click="editPet($index)"></ion-option-button>
@@ -100,10 +103,10 @@
               </button>
           </ion-header-bar>
           <ion-content>
-              <form ng-submit="createPet()">
+              <form name="petInfo" ng-submit="createPet()" novalidate>
                   <div class="list list-inset">
                       <label class="item item-input">
-                          <input ng-model="pet.name" type="text" placeholder="Pet name">
+                          <input ng-model="pet.name" type="text" placeholder="Pet name" required />
                       </label>
                       <ul class="list">
                           <li class="item item-toggle">
@@ -123,9 +126,8 @@
                           <div class="input-label">
                             Animal
                           </div>
-                          <select name='Animal' ng-model="pet.kind">
-                            <option  ng-repeat="item in newPetOptions.kind"
-                                    ng-value="item.text">{{ item.text }}</option>
+                          <select name='Animal' ng-model="pet.kind.text" ng-options="item.text for item in newPetOptions.kind">
+                            <option value="">Choose a pet type</option>
                           </select>
 
                         </label>
@@ -134,9 +136,13 @@
 
                       </div>
 
-                      <button type="submit" class="button button-block button-positive">Add Pet</button>
+                      <button type="submit" class="button button-block button-positive" ng-disabled="petInfo.$invalid">Add Pet</button>
                   </div>
-
+                  <script id="templates/form-errors.html" type="text/ng-template">
+                    <div class="form-error" ng-message="required">This field is required.</div>
+                    <div class="form-error" ng-message="minlength">This field is must be at least 5 characters.</div>
+                    <div class="form-error" ng-message="maxlength">This field is must be less than 50 characters</div>
+                  </script>
               </form>
 
           </ion-content>

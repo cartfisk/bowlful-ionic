@@ -4,7 +4,7 @@
 // angular.module is a global place for creating, registering and retrieving Angular modules
 // 'starter' is the name of this angular module example (also set in a <body> attribute in index.html)
 // the 2nd parameter is an array of 'requires'
-var app = angular.module('bowlful', ['ionic', 'LocalStorageModule', 'ngCordova']);
+var app = angular.module('bowlful', ['ionic', 'LocalStorageModule', 'ngCordova', 'ngMessages']);
 
 app.run(function($ionicPlatform) {
   $ionicPlatform.ready(function() {
@@ -40,8 +40,12 @@ app.controller('main', function ($scope, $ionicModal, localStorageService, $ioni
   $scope.resetPet = function (index) {
     $scope.pet = {
       feedLog: [],
-      feedStatus: 0
+      feedStatus: 0,
+      kind : {
+        text : "Dog"
+      }
     };
+    $scope.selectedPet = "Dog";
   };
 
   $scope.resetPet();
@@ -53,6 +57,8 @@ app.controller('main', function ($scope, $ionicModal, localStorageService, $ioni
       {text: "Bird"}
     ]
   };
+
+
 
   $scope.toggleLeftSideMenu = function () {
     $ionicSideMenuDelegate.toggleLeft();
@@ -79,6 +85,7 @@ app.controller('main', function ($scope, $ionicModal, localStorageService, $ioni
         if (index==1){
           $scope.getPhoto(false);
         }
+        return true;
       }
     });
 
@@ -94,11 +101,21 @@ app.controller('main', function ($scope, $ionicModal, localStorageService, $ioni
       console.log('success - js call');
       //JS selector call is slightly faster...
       $scope.pet.img = imageData;
-      $scope.photoActionSheet.hideSheet();
     }
 
     function onFail(message) {
-      alert('Failed because: ' + message);
+      // showAlert = function() {
+      //   var alertPopup = $ionicPopup.alert({
+      //     title: 'Cancelled',
+      //     template: 'Photo upload cancelled, please try again.'
+      //   });
+      //
+      //   alertPopup.then(function(res) {
+      //   //after popup controls
+      //   });
+      // };
+      // showAlert();
+      console.log("Photo upload cancelled.")
     }
 
     if (camera === true) {
@@ -147,6 +164,9 @@ app.controller('main', function ($scope, $ionicModal, localStorageService, $ioni
       if (!$scope.pet.img) {
         $scope.pet.img = 'img/ionic.png';
       }
+      $scope.pet.kind = {
+        text : $scope.selectedPet
+      };
       // $scope.pets.img = $scope.pets.kind + '.png';
       // $scope.pet.img = 'img/ionic.png';
       $scope.pets.push($scope.pet);
@@ -168,6 +188,7 @@ app.controller('main', function ($scope, $ionicModal, localStorageService, $ioni
   };
 
   $scope.petDialog = function(index) {
+    $ionicListDelegate.closeOptionButtons();
     var lastFed;
     if ($scope.pets[index].feedLog[0]) {
       var current = $scope.pets[index].currentFeed;

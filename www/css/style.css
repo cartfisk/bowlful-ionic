@@ -1,5 +1,4 @@
 /* Empty. Add your own CSS if you like */
-span.footer-button {
-  font-size: 1.3em;
-  font-weight: 600;
+.popup-body{
+  text-align: center;
 }
