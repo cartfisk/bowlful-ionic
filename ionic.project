@@ -1,4 +1,5 @@
 {
   "name": "bowlful",
-  "app_id": ""
+  "app_id": "",
+  "defaultBrowser": "google chrome"
 }
